@@ -4,7 +4,12 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     cleanCSS = require('gulp-clean-css'),
     livereload = require('gulp-livereload'),
-    connect = require('gulp-connect');
+    connect = require('gulp-connect'),
+    babel = require('gulp-babel'),
+    react = require('gulp-react'),
+    browserify = require('browserify'),
+    babelify = require('babelify'),
+    source = require('vinyl-source-stream');
 
 
 // server connect
@@ -31,10 +36,20 @@ gulp.task('css', function () {
 });
 
 
+//build
+gulp.task('build', function () {
+    return browserify({entries: 'js/app.js', extensions: ['.js']})
+        .transform('babelify', {presets: ['es2015', 'react']})
+        .bundle()
+        .pipe(source('bundle.js'))
+        .pipe(gulp.dest('sourse'));
+});
+
 // watch
 gulp.task("watch", function() {
     livereload.listen();
     gulp.watch("style/*.scss", ["css"]);
+    gulp.watch("js/*.js", ["build"])
 });
 
 // default
